@@ -55,3 +55,8 @@ FutureBuilder(
 ```
 
 To use image settings for track and thumb, use `DHSlider.image`.
+
+
+
+<img src="./images/screen_shot.jpg" alt="slider" style="zoom:50%;" />
+
