@@ -53,9 +53,9 @@ packages:
   dh_slider:
     dependency: "direct main"
     description:
-      path: ".."
-      relative: true
-    source: path
+      name: dh_slider
+      url: "https://pub.flutter-io.cn"
+    source: hosted
     version: "0.0.3"
   fake_async:
     dependency: transitive
