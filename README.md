@@ -8,6 +8,12 @@ Note that there is a [gesture problem](https://github.com/flutter/flutter/issues
 
 ## How to use
 
+- Import dh_slider
+
+```
+import 'package:dh_slider/dh_slider.dart';
+```
+
 - Use color to set slider
 
 ```

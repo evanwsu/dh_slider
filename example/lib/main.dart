@@ -24,7 +24,6 @@ class MyApp extends StatelessWidget {
 
 class SliderPage extends StatefulWidget {
   SliderPage({Key key, this.title}) : super(key: key);
-  
 
   final String title;
 
@@ -33,7 +32,6 @@ class SliderPage extends StatefulWidget {
 }
 
 class _SliderPageState extends State<SliderPage> {
-
   double slider = 0.0;
 
   Future<ui.Image> sliderFuture;
@@ -51,21 +49,33 @@ class _SliderPageState extends State<SliderPage> {
         thumbBorderSide: BorderSide.none,
         thumbColor: Colors.redAccent,
         trackHeight: 3,
+        backgroundColor: Colors.pink,
         margin: EdgeInsets.only(left: 10, right: 10, top: 20),
         value: slider,
-        onChangeEnd: (double value){
+        label: "$slider",
+        indicator: Indicator(
+          rectRadius: 10,
+          labelPadding: 18
+        ),
+        indicatorStyle: IndicatorStyle(
+            backgroundColor: Colors.red,
+            shadowColor: Colors.black,
+            elevation: 12.0,
+        ),
+        showValueIndicator: ShowValueIndicator.always,
+        onChangeEnd: (double value) {
           print("onChangeEnd: $value");
           this.setState(() {
             slider = value;
           });
         },
-        onChangeStart: (double value){
+        onChangeStart: (double value) {
           this.setState(() {
             slider = value;
           });
           print("onChangeStart: $value");
         },
-        onChanged: (double value){
+        onChanged: (double value) {
           this.setState(() {
             slider = value;
           });
@@ -111,17 +121,15 @@ class _SliderPageState extends State<SliderPage> {
         title: Text(widget.title),
       ),
       body: ListView(
-        children: <Widget>[
-          dhSlider,
-          fbSlider
-        ],
-      ), 
+        children: <Widget>[dhSlider, fbSlider],
+      ),
     );
   }
 
-  Future<ui.Image> getImageFuture(ImageProvider provider, {
+  Future<ui.Image> getImageFuture(
+    ImageProvider provider, {
     ImageConfiguration config = ImageConfiguration.empty,
-  }){
+  }) {
     //new Completer
     Completer<ui.Image> completer = Completer<ui.Image>();
     ImageStreamListener listener;
