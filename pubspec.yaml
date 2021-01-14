@@ -1,6 +1,6 @@
 name: dh_slider
 description: A handy slider that supports color and image settings for thumb and track.
-version: 0.0.4
+version: 0.0.5
 homepage: https://github.com/evansherry/dh_slider
 
 environment:

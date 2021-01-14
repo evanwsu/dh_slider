@@ -1,4 +1,4 @@
-# dh_slider[![dh_slider](https://img.shields.io/badge/pub-0.0.2-brightgreen.svg)](https://pub.dev/packages/dh_slider)
+# dh_slider[![dh_slider](https://img.shields.io/badge/pub-0.0.5-brightgreen.svg)](https://pub.dev/packages/dh_slider)
 
 A handy slider that supports color and image settings for thumb and track.
 

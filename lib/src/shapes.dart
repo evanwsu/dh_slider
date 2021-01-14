@@ -334,9 +334,11 @@ class DHIndicatorPathPainter {
     }
     assert(!sizeWithOverflow.isEmpty);
 
+    bool reverse = style?.reverse ?? false;
+
     final double rectangleWidth =
         _upperRectangleWidth(labelPainter, scale, textScaleFactor);
-    final double horizontalShift = getHorizontalShift(
+    final double horizontalShift = (reverse ? -1 : 1) * getHorizontalShift(
       parentBox: parentBox,
       center: center,
       labelPainter: labelPainter,
@@ -366,7 +368,14 @@ class DHIndicatorPathPainter {
         upperRect, Radius.circular(indicator.rectRadius));
     trianglePath.addRRect(upperRRect);
 
+    double radians = style?.angle ?? 0;
+
     canvas.save();
+    // 旋转indicator
+    canvas.translate(center.dx, center.dy);
+    canvas.rotate(radians);
+    canvas.translate(-center.dx, -center.dy);
+
     // 根据thumb位置来平移
     // offsetY表示三角箭头和slider的距离
     canvas.translate(center.dx, center.dy - indicator.offsetY);
@@ -397,7 +406,16 @@ class DHIndicatorPathPainter {
     final Offset currentOffset =
         Offset(labelPainter.width / 2, labelPainter.height / 2);
     final Offset labelOffset = targetOffset - currentOffset;
+
+    // 旋转内容
+    if(reverse){
+      canvas.translate(targetOffset.dx, targetOffset.dy);
+      canvas.rotate(math.pi);
+      canvas.translate(-targetOffset.dx, -targetOffset.dy);
+    }
+
     labelPainter.paint(canvas, labelOffset);
+
     canvas.restore();
   }
 

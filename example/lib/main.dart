@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:math';
+import 'dart:ui' as ui;
+
 import 'package:dh_slider/dh_slider.dart';
 import 'package:flutter/material.dart';
-import 'dart:ui' as ui;
 
 void main() {
   runApp(MyApp());
@@ -49,19 +51,16 @@ class _SliderPageState extends State<SliderPage> {
         thumbBorderSide: BorderSide.none,
         thumbColor: Colors.redAccent,
         trackHeight: 3,
-        backgroundColor: Colors.pink,
         margin: EdgeInsets.only(left: 10, right: 10, top: 20),
         value: slider,
         label: "$slider",
-        indicator: Indicator(
-          rectRadius: 10,
-          labelPadding: 18
-        ),
+        indicator: Indicator(rectRadius: 10, labelPadding: 18),
         indicatorStyle: IndicatorStyle(
             backgroundColor: Colors.red,
             shadowColor: Colors.black,
             elevation: 12.0,
-        ),
+            reverse: true,
+            angle: pi),
         showValueIndicator: ShowValueIndicator.always,
         onChangeEnd: (double value) {
           print("onChangeEnd: $value");
