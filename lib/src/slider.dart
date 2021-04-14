@@ -1,6 +1,8 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:ui' as ui;
+
+import 'package:flutter/material.dart';
+
 import 'indicator.dart';
 import 'shapes.dart';
 
@@ -58,25 +60,25 @@ class DHSlider extends StatelessWidget {
       TextStyle(color: Colors.black, fontSize: 14.0);
 
   /// 轨道高度
-  final double trackHeight;
+  final double? trackHeight;
 
   /// 可用状态左侧轨道颜色
-  final Color activeTrackColor;
+  final Color? activeTrackColor;
 
   /// 可用状态右侧轨道颜色
-  final Color inactiveTrackColor;
+  final Color? inactiveTrackColor;
 
   /// 不可用状态左侧轨道颜色
-  final Color disabledActiveTrackColor;
+  final Color? disabledActiveTrackColor;
 
   /// 不可用状态右侧轨道颜色
-  final Color disabledInactiveTrackColor;
+  final Color? disabledInactiveTrackColor;
 
   /// 可用状态thumb颜色
-  final Color thumbColor;
+  final Color? thumbColor;
 
   /// 不可用状态thumb 颜色
-  final Color disabledThumbColor;
+  final Color? disabledThumbColor;
 
   /// 当前滑条值
   final double value;
@@ -97,57 +99,57 @@ class DHSlider extends StatelessWidget {
   final SliderTrackShape trackShape;
 
   /// 滑条指示器形状，默认[DHIndicatorShape]
-  final SliderComponentShape indicatorShape;
+  final SliderComponentShape? indicatorShape;
 
   /// 滑动开始回调
-  final ValueChanged<double> onChangeStart;
+  final ValueChanged<double>? onChangeStart;
 
   /// 滑动结束回调
-  final ValueChanged<double> onChangeEnd;
+  final ValueChanged<double>? onChangeEnd;
 
   /// 滑动值改变回调
-  final ValueChanged<double> onChanged;
+  final ValueChanged<double>? onChanged;
 
   /// 是否在滑动控件内
   final bool inScroll;
 
   /// 滑条刻度分为具体份数
-  final int divisions;
+  final int? divisions;
 
   /// slider气泡标签
-  final String label;
+  final String? label;
 
   /// 焦点节点
-  final FocusNode focusNode;
+  final FocusNode? focusNode;
 
   /// 是否自动获取焦点
   final bool autoFocus;
 
   /// 设置显示器样式
-  final ShowValueIndicator showValueIndicator;
+  final ShowValueIndicator? showValueIndicator;
 
   /// 指示器文本样式
-  final TextStyle indicatorTextStyle;
+  final TextStyle? indicatorTextStyle;
 
   /// 控件宽度
-  final double width;
+  final double? width;
 
   /// 控件高度
-  final double height;
+  final double? height;
 
   /// 控件背景颜色
-  final Color backgroundColor;
+  final Color? backgroundColor;
 
   /// 控件填充
-  final EdgeInsetsGeometry padding;
+  final EdgeInsetsGeometry? padding;
 
   /// 控件边距
-  final EdgeInsetsGeometry margin;
+  final EdgeInsetsGeometry? margin;
 
   DHSlider({
-    Key key,
-    SliderTrackShape trackShape,
-    ui.Image trackImage,
+    Key? key,
+    SliderTrackShape? trackShape,
+    ui.Image? trackImage,
     this.trackHeight,
     this.activeTrackColor,
     this.inactiveTrackColor,
@@ -157,13 +159,13 @@ class DHSlider extends StatelessWidget {
     this.disabledThumbColor,
     double enabledThumbRadius = 12.0,
     double disabledThumbRadius = 12.0,
-    ui.Image thumbImage,
-    SliderComponentShape thumbShape,
-    SliderComponentShape indicatorShape,
-    Indicator indicator,
-    IndicatorStyle indicatorStyle,
-    BorderSide thumbBorderSide,
-    @required this.value,
+    ui.Image? thumbImage,
+    SliderComponentShape? thumbShape,
+    SliderComponentShape? indicatorShape,
+    Indicator? indicator,
+    IndicatorStyle? indicatorStyle,
+    BorderSide? thumbBorderSide,
+    required this.value,
     this.disabled = false,
     this.min = 0.0,
     this.max = 1.0,
@@ -181,54 +183,58 @@ class DHSlider extends StatelessWidget {
     this.backgroundColor,
     this.padding,
     this.margin,
-    this.inScroll = true,
+    this.inScroll = false,
   })  : assert(value != null),
         assert(min != null),
         assert(max != null),
         assert(min <= max),
         assert(value >= min && value <= max),
+        assert(divisions == null || divisions > 0),
         assert(disabled != null),
         this.trackShape = trackShape ?? DHSliderTrackShape(image: trackImage),
         this.thumbShape = thumbShape ??
             DHThumbShape(
-                enabledThumbRadius: enabledThumbRadius,
-                disabledThumbRadius: disabledThumbRadius,
-                borderSide: thumbBorderSide ?? BorderSide.none,
-                image: thumbImage),
-        this.indicatorShape =
-            indicatorShape ?? DHIndicatorShape(indicator, indicatorStyle),
+              enabledThumbRadius: enabledThumbRadius,
+              disabledThumbRadius: disabledThumbRadius,
+              borderSide: thumbBorderSide ?? BorderSide.none,
+              image: thumbImage,
+            ),
+        this.indicatorShape = indicatorShape ??
+            (indicator != null
+                ? DHIndicatorShape(indicator, indicatorStyle)
+                : null),
         super(key: key);
 
   /// 使用track 和 thumb 图片
   DHSlider.image({
-    Key key,
-    double trackHeight,
-    @required ui.Image trackImage,
+    Key? key,
+    double? trackHeight,
+    required ui.Image? trackImage,
     double enabledThumbRadius = 12.0,
     double disabledThumbRadius = 12.0,
-    @required ui.Image thumbImage,
-    @required double value,
-    bool disabled = false,
+    required ui.Image? thumbImage,
+    required double value,
     double min = 0.0,
     double max = 1.0,
-    int divisions,
-    String label,
-    FocusNode focusNode,
+    int? divisions,
+    String? label,
+    FocusNode? focusNode,
     bool autoFocus = false,
-    SliderComponentShape indicatorShape,
-    Indicator indicator,
-    IndicatorStyle indicatorStyle,
-    ShowValueIndicator showValueIndicator,
-    TextStyle indicatorTextStyle,
-    ValueChanged<double> onChangeStart,
-    ValueChanged<double> onChangeEnd,
-    ValueChanged<double> onChanged,
-    double width,
-    double height,
-    Color backgroundColor,
-    EdgeInsetsGeometry padding,
-    EdgeInsetsGeometry margin,
-    bool inScroll,
+    SliderComponentShape? indicatorShape,
+    Indicator? indicator,
+    IndicatorStyle? indicatorStyle,
+    ShowValueIndicator? showValueIndicator,
+    TextStyle? indicatorTextStyle,
+    ValueChanged<double>? onChangeStart,
+    ValueChanged<double>? onChangeEnd,
+    ValueChanged<double>? onChanged,
+    bool disabled = false,
+    double? width,
+    double? height,
+    Color? backgroundColor,
+    EdgeInsetsGeometry? padding,
+    EdgeInsetsGeometry? margin,
+    bool inScroll = false,
   }) : this(
           key: key,
           value: value,
@@ -285,10 +291,10 @@ class DHSlider extends StatelessWidget {
             value: value,
             min: min,
             max: max,
-            divisions: divisions,
             label: label,
             focusNode: focusNode,
             autofocus: autoFocus,
+            divisions: divisions,
             onChangeStart: onChangeStart,
             onChanged: disabled ? null : onChanged,
             onChangeEnd: onChangeEnd,
@@ -327,29 +333,29 @@ class FixSlider extends StatefulWidget {
   final double value;
   final double min;
   final double max;
-  final int divisions;
-  final String label;
+  final int? divisions;
+  final String? label;
 
   /// 焦点节点
-  final FocusNode focusNode;
+  final FocusNode? focusNode;
 
   /// 是否自动获取焦点
   final bool autoFocus;
-  final ValueChanged<double> onChangeStart;
-  final ValueChanged<double> onChangeEnd;
-  final ValueChanged<double> onChanged;
+  final ValueChanged<double>? onChangeStart;
+  final ValueChanged<double>? onChangeEnd;
+  final ValueChanged<double>? onChanged;
 
   FixSlider({
-    @required this.value,
-    this.min,
-    this.max,
+    required this.value,
+    this.min = .0,
+    this.max = 1.0,
     this.onChangeStart,
     this.onChanged,
     this.onChangeEnd,
     this.divisions,
     this.label,
     this.focusNode,
-    this.autoFocus,
+    this.autoFocus = false,
   });
 
   @override
@@ -358,8 +364,8 @@ class FixSlider extends StatefulWidget {
 
 class _FixSliderState extends State<FixSlider> {
   static const duration = Duration(milliseconds: 100);
-  DateTime lastOnChangeEnd;
-  Timer _timer;
+  DateTime? lastOnChangeEnd;
+  Timer? _timer;
 
   @override
   Widget build(BuildContext context) {
@@ -373,7 +379,7 @@ class _FixSliderState extends State<FixSlider> {
       focusNode: widget.focusNode,
       onChangeStart: (double value) {
         if (lastOnChangeEnd == null ||
-            DateTime.now().difference(lastOnChangeEnd) > duration) {
+            DateTime.now().difference(lastOnChangeEnd!) > duration) {
           widget.onChangeStart?.call(value);
         } else {
           _timer?.cancel();

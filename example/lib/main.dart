@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
 }
 
 class SliderPage extends StatefulWidget {
-  SliderPage({Key key, this.title}) : super(key: key);
+  SliderPage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
@@ -36,7 +36,7 @@ class SliderPage extends StatefulWidget {
 class _SliderPageState extends State<SliderPage> {
   double slider = 0.0;
 
-  Future<ui.Image> sliderFuture;
+  Future<ui.Image>? sliderFuture;
 
   @override
   void initState() {
@@ -131,7 +131,7 @@ class _SliderPageState extends State<SliderPage> {
   }) {
     //new Completer
     Completer<ui.Image> completer = Completer<ui.Image>();
-    ImageStreamListener listener;
+    ImageStreamListener? listener;
     //获取图片流
     ImageStream stream = provider.resolve(config);
     listener = ImageStreamListener((ImageInfo frame, bool sync) {
@@ -140,7 +140,7 @@ class _SliderPageState extends State<SliderPage> {
       //完成事件
       completer.complete(image);
       //移除监听
-      stream.removeListener(listener);
+      stream.removeListener(listener!);
     });
     //添加监听
     stream.addListener(listener);

@@ -24,21 +24,18 @@ class Indicator {
     this.triangleHeight = 8.0,
     this.offsetY = 14.0,
     this.rectRadius = 6.0,
-  })  : assert(labelPadding != null),
-        assert(triangleHeight != null),
-        assert(offsetY != null),
-        assert(rectRadius != null);
+  });
 }
 
 class IndicatorStyle {
   /// 背景颜色
-  final Color backgroundColor;
+  final Color? backgroundColor;
   /// 边框颜色
-  final Color strokeColor;
+  final Color? strokeColor;
   /// 阴影颜色
-  final Color shadowColor;
+  final Color? shadowColor;
   /// z轴阴影高度
-  final double elevation;
+  final double? elevation;
   /// 指示器上下反转
   /// 显示效果会因angle改变
   final bool reverse;

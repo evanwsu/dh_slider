@@ -11,21 +11,21 @@ import 'indicator.dart';
 
 /// 自定义Track
 class DHSliderTrackShape extends SliderTrackShape {
-  final ui.Image image;
+  final ui.Image? image;
 
   const DHSliderTrackShape({this.image});
 
   @override
   Rect getPreferredRect({
-    @required RenderBox parentBox,
+    required RenderBox parentBox,
     Offset offset = Offset.zero,
-    @required SliderThemeData sliderTheme,
+    required SliderThemeData sliderTheme,
     bool isEnabled = false,
     bool isDiscrete = false,
   }) {
     final double thumbSize =
-        sliderTheme.thumbShape.getPreferredSize(isEnabled, isDiscrete).width;
-    final double trackHeight = sliderTheme.trackHeight;
+        sliderTheme.thumbShape!.getPreferredSize(isEnabled, isDiscrete).width;
+    final double trackHeight = sliderTheme.trackHeight!;
     final double trackLeft = offset.dx + thumbSize / 2;
     final double trackTop =
         offset.dy + (parentBox.size.height - trackHeight) / 2;
@@ -34,16 +34,19 @@ class DHSliderTrackShape extends SliderTrackShape {
   }
 
   @override
-  void paint(PaintingContext context, Offset offset,
-      {RenderBox parentBox,
-      SliderThemeData sliderTheme,
-      Animation<double> enableAnimation,
-      TextDirection textDirection,
-      Offset thumbCenter,
-      bool isDiscrete = false,
-      bool isEnabled = false}) {
+  void paint(
+    PaintingContext context,
+    Offset offset, {
+    required RenderBox parentBox,
+    required SliderThemeData sliderTheme,
+    required Animation<double> enableAnimation,
+    required TextDirection textDirection,
+    required Offset thumbCenter,
+    bool isDiscrete = false,
+    bool isEnabled = false,
+  }) {
     if (image == null) {
-      if (sliderTheme.trackHeight <= 0) {
+      if (sliderTheme.trackHeight == null || sliderTheme.trackHeight! <= 0) {
         return;
       }
 
@@ -54,9 +57,9 @@ class DHSliderTrackShape extends SliderTrackShape {
           begin: sliderTheme.disabledInactiveTrackColor,
           end: sliderTheme.inactiveTrackColor);
       final Paint activePaint = Paint()
-        ..color = activeTrackColorTween.evaluate(enableAnimation);
+        ..color = activeTrackColorTween.evaluate(enableAnimation)!;
       final Paint inactivePaint = Paint()
-        ..color = inactiveTrackColorTween.evaluate(enableAnimation);
+        ..color = inactiveTrackColorTween.evaluate(enableAnimation)!;
       Paint leftTrackPaint;
       Paint rightTrackPaint;
       switch (textDirection) {
@@ -82,7 +85,7 @@ class DHSliderTrackShape extends SliderTrackShape {
           trackRect.left, trackRect.top, trackRect.height, trackRect.height);
 
       final Size thumbSize =
-          sliderTheme.thumbShape.getPreferredSize(isEnabled, isDiscrete);
+          sliderTheme.thumbShape!.getPreferredSize(isEnabled, isDiscrete);
       final Rect leftTrackSegment = Rect.fromLTRB(
           trackRect.left + trackRect.height / 2,
           trackRect.top,
@@ -122,11 +125,11 @@ class DHSliderTrackShape extends SliderTrackShape {
         isEnabled: isEnabled,
         isDiscrete: isDiscrete,
       );
-      Rect src =
-          Rect.fromLTRB(0, 0, image.width.toDouble(), image.height.toDouble());
+      Rect src = Rect.fromLTRB(
+          0, 0, image!.width.toDouble(), image!.height.toDouble());
       if (!src.isEmpty && !dst.isEmpty)
         context.canvas
-            .drawImageRect(image, src, dst, Paint()..isAntiAlias = true);
+            .drawImageRect(image!, src, dst, Paint()..isAntiAlias = true);
     }
   }
 }
@@ -134,16 +137,16 @@ class DHSliderTrackShape extends SliderTrackShape {
 /// 自定义Thumb
 class DHThumbShape extends SliderComponentShape {
   final double enabledThumbRadius;
-
-  final double disabledThumbRadius;
-  final ui.Image image;
+  final double? disabledThumbRadius;
+  final ui.Image? image;
   final BorderSide borderSide;
-  const DHThumbShape(
-      {this.enabledThumbRadius = 10.0,
-      this.disabledThumbRadius,
-      this.image,
-      this.borderSide})
-      : assert(borderSide != null);
+
+  const DHThumbShape({
+    required this.borderSide,
+    this.enabledThumbRadius = 10.0,
+    this.disabledThumbRadius,
+    this.image,
+  });
 
   double get _disabledThumbRadius => disabledThumbRadius ?? enabledThumbRadius;
 
@@ -157,16 +160,16 @@ class DHThumbShape extends SliderComponentShape {
   void paint(
     PaintingContext context,
     Offset center, {
-    Animation<double> activationAnimation,
-    @required Animation<double> enableAnimation,
-    bool isDiscrete,
-    TextPainter labelPainter,
-    RenderBox parentBox,
-    @required SliderThemeData sliderTheme,
-    TextDirection textDirection,
-    double value,
-    double textScaleFactor,
-    Size sizeWithOverflow,
+    required Animation<double> activationAnimation,
+    required Animation<double> enableAnimation,
+    required bool isDiscrete,
+    required TextPainter labelPainter,
+    required RenderBox parentBox,
+    required SliderThemeData sliderTheme,
+    required TextDirection textDirection,
+    required double value,
+    required double textScaleFactor,
+    required Size sizeWithOverflow,
   }) {
     assert(context != null);
     assert(center != null);
@@ -190,7 +193,7 @@ class DHThumbShape extends SliderComponentShape {
         radius,
         paint
           ..style = PaintingStyle.fill
-          ..color = colorTween.evaluate(enableAnimation),
+          ..color = colorTween.evaluate(enableAnimation)!,
       );
       // 绘制边框
       if (borderSide.style != BorderStyle.none) {
@@ -204,10 +207,10 @@ class DHThumbShape extends SliderComponentShape {
       }
     } else {
       Rect dst = Rect.fromCircle(center: center, radius: radius);
-      Rect src =
-          Rect.fromLTRB(0, 0, image.width.toDouble(), image.height.toDouble());
+      Rect src = Rect.fromLTRB(
+          0, 0, image!.width.toDouble(), image!.height.toDouble());
       context.canvas
-          .drawImageRect(image, src, dst, Paint()..isAntiAlias = true);
+          .drawImageRect(image!, src, dst, Paint()..isAntiAlias = true);
     }
   }
 }
@@ -215,7 +218,7 @@ class DHThumbShape extends SliderComponentShape {
 /// 自定义数值指示器形状 参考[RectangularSliderValueIndicatorShape]
 class DHIndicatorShape extends SliderComponentShape {
   final DHIndicatorPathPainter _pathPainter;
-  final IndicatorStyle style;
+  final IndicatorStyle? style;
 
   DHIndicatorShape(Indicator indicator, this.style)
       : this._pathPainter = DHIndicatorPathPainter(indicator);
@@ -224,41 +227,41 @@ class DHIndicatorShape extends SliderComponentShape {
   Size getPreferredSize(
     bool isEnabled,
     bool isDiscrete, {
-    TextPainter labelPainter,
-    double textScaleFactor,
+    TextPainter? labelPainter,
+    double? textScaleFactor,
   }) {
     assert(labelPainter != null);
     assert(textScaleFactor != null && textScaleFactor >= 0);
-    return _pathPainter.getPreferredSize(labelPainter, textScaleFactor);
+    return _pathPainter.getPreferredSize(labelPainter!, textScaleFactor!);
   }
 
   @override
   void paint(
     PaintingContext context,
     Offset center, {
-    @required Animation<double> activationAnimation,
-    @required Animation<double> enableAnimation,
-    @required bool isDiscrete,
-    @required TextPainter labelPainter,
-    @required RenderBox parentBox,
-    @required SliderThemeData sliderTheme,
-    @required TextDirection textDirection,
-    @required double value,
-    @required double textScaleFactor,
-    @required Size sizeWithOverflow,
+    required Animation<double> activationAnimation,
+    required Animation<double> enableAnimation,
+    required bool isDiscrete,
+    required TextPainter labelPainter,
+    required RenderBox parentBox,
+    required SliderThemeData sliderTheme,
+    required TextDirection textDirection,
+    required double value,
+    required double textScaleFactor,
+    required Size sizeWithOverflow,
   }) {
     final Canvas canvas = context.canvas;
     final double scale = activationAnimation.value;
-
     _pathPainter.paint(
-        parentBox: parentBox,
-        canvas: canvas,
-        center: center,
-        scale: scale,
-        labelPainter: labelPainter,
-        textScaleFactor: textScaleFactor,
-        sizeWithOverflow: sizeWithOverflow,
-        style: style);
+      parentBox: parentBox,
+      canvas: canvas,
+      center: center,
+      scale: scale,
+      labelPainter: labelPainter,
+      textScaleFactor: textScaleFactor,
+      sizeWithOverflow: sizeWithOverflow,
+      style: style,
+    );
   }
 }
 
@@ -268,16 +271,15 @@ class DHIndicatorPathPainter {
 
   Indicator indicator;
 
-  DHIndicatorPathPainter(Indicator indicator)
-      : this.indicator = indicator ?? const Indicator();
+  DHIndicatorPathPainter(this.indicator);
 
   double getHorizontalShift({
-    @required RenderBox parentBox,
-    @required Offset center,
-    @required TextPainter labelPainter,
-    @required double textScaleFactor,
-    @required Size sizeWithOverflow,
-    @required double scale,
+    required RenderBox parentBox,
+    required Offset center,
+    required TextPainter labelPainter,
+    required double textScaleFactor,
+    required Size sizeWithOverflow,
+    required double scale,
   }) {
     assert(!sizeWithOverflow.isEmpty);
 
@@ -312,7 +314,6 @@ class DHIndicatorPathPainter {
     TextPainter labelPainter,
     double textScaleFactor,
   ) {
-    assert(labelPainter != null);
     return Size(
       _upperRectangleWidth(labelPainter, 1, textScaleFactor),
       labelPainter.height + indicator.labelPadding,
@@ -320,14 +321,14 @@ class DHIndicatorPathPainter {
   }
 
   void paint({
-    @required RenderBox parentBox,
-    @required Canvas canvas,
-    @required Offset center,
-    @required double scale,
-    @required TextPainter labelPainter,
-    @required double textScaleFactor,
-    @required Size sizeWithOverflow,
-    @required IndicatorStyle style,
+    required RenderBox parentBox,
+    required Canvas canvas,
+    required Offset center,
+    required double scale,
+    required TextPainter labelPainter,
+    required double textScaleFactor,
+    required Size sizeWithOverflow,
+    IndicatorStyle? style,
   }) {
     if (scale == 0.0) {
       return;
@@ -338,14 +339,15 @@ class DHIndicatorPathPainter {
 
     final double rectangleWidth =
         _upperRectangleWidth(labelPainter, scale, textScaleFactor);
-    final double horizontalShift = (reverse ? -1 : 1) * getHorizontalShift(
-      parentBox: parentBox,
-      center: center,
-      labelPainter: labelPainter,
-      textScaleFactor: textScaleFactor,
-      sizeWithOverflow: sizeWithOverflow,
-      scale: scale,
-    );
+    final double horizontalShift = (reverse ? -1 : 1) *
+        getHorizontalShift(
+          parentBox: parentBox,
+          center: center,
+          labelPainter: labelPainter,
+          textScaleFactor: textScaleFactor,
+          sizeWithOverflow: sizeWithOverflow,
+          scale: scale,
+        );
     // 三角箭头高度
     final _triangleHeight = indicator.triangleHeight;
     // 计算rect区域高度(label文本高度 + label上下padding)
@@ -382,15 +384,16 @@ class DHIndicatorPathPainter {
     canvas.scale(scale, scale);
 
     // 阴影绘制
-    Color shadowColor = style?.shadowColor;
-    double elevation = style?.elevation ?? _elevation;
+    Color? shadowColor = style?.shadowColor;
     if (shadowColor != null) {
+      double elevation = style?.elevation ?? _elevation;
       canvas.drawShadow(trianglePath, shadowColor, elevation, true);
     }
 
-    if (style?.strokeColor != null) {
+    Color? strokeColor = style?.strokeColor;
+    if (strokeColor != null) {
       final Paint strokePaint = Paint()
-        ..color = style.strokeColor
+        ..color = strokeColor
         ..strokeWidth = 1.0
         ..style = PaintingStyle.stroke;
       canvas.drawPath(trianglePath, strokePaint);
@@ -408,7 +411,7 @@ class DHIndicatorPathPainter {
     final Offset labelOffset = targetOffset - currentOffset;
 
     // 旋转内容
-    if(reverse){
+    if (reverse) {
       canvas.translate(targetOffset.dx, targetOffset.dy);
       canvas.rotate(math.pi);
       canvas.translate(-targetOffset.dx, -targetOffset.dy);
