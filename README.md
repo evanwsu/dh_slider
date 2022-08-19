@@ -2,8 +2,6 @@
 
 A handy slider that supports color and image settings for thumb and track.
 
-Note that there is a [gesture problem](https://github.com/flutter/flutter/issues/28115?notification_referrer_id=MDE4Ok5vdGlmaWNhdGlvblRocmVhZDQ1MzM4MTIzMzoxMTg4MTc1MQ%3D%3D#issuecomment-674459890) when slider is used inside a scrollView, you need to set the `inScroll = true`.
-
 
 
 ## How to use

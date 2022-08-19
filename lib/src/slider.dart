@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
@@ -110,9 +109,6 @@ class DHSlider extends StatelessWidget {
   /// 滑动值改变回调
   final ValueChanged<double>? onChanged;
 
-  /// 是否在滑动控件内
-  final bool inScroll;
-
   /// 滑条刻度分为具体份数
   final int? divisions;
 
@@ -158,7 +154,7 @@ class DHSlider extends StatelessWidget {
     this.thumbColor,
     this.disabledThumbColor,
     double enabledThumbRadius = 12.0,
-    double disabledThumbRadius = 12.0,
+    double? disabledThumbRadius,
     ui.Image? thumbImage,
     SliderComponentShape? thumbShape,
     SliderComponentShape? indicatorShape,
@@ -183,7 +179,6 @@ class DHSlider extends StatelessWidget {
     this.backgroundColor,
     this.padding,
     this.margin,
-    this.inScroll = false,
   })  : assert(value != null),
         assert(min != null),
         assert(max != null),
@@ -211,7 +206,7 @@ class DHSlider extends StatelessWidget {
     double? trackHeight,
     required ui.Image? trackImage,
     double enabledThumbRadius = 12.0,
-    double disabledThumbRadius = 12.0,
+    double? disabledThumbRadius,
     required ui.Image? thumbImage,
     required double value,
     double min = 0.0,
@@ -269,36 +264,22 @@ class DHSlider extends StatelessWidget {
           backgroundColor: backgroundColor,
           padding: padding,
           margin: margin,
-          inScroll: inScroll,
         );
 
   @override
   Widget build(BuildContext context) {
-    Widget slider = inScroll
-        ? FixSlider(
-            value: value,
-            min: min,
-            max: max,
-            label: label,
-            focusNode: focusNode,
-            autoFocus: autoFocus,
-            divisions: divisions,
-            onChangeStart: onChangeStart,
-            onChanged: disabled ? null : onChanged,
-            onChangeEnd: onChangeEnd,
-          )
-        : Slider(
-            value: value,
-            min: min,
-            max: max,
-            label: label,
-            focusNode: focusNode,
-            autofocus: autoFocus,
-            divisions: divisions,
-            onChangeStart: onChangeStart,
-            onChanged: disabled ? null : onChanged,
-            onChangeEnd: onChangeEnd,
-          );
+    Widget slider = Slider(
+      value: value,
+      min: min,
+      max: max,
+      label: label,
+      focusNode: focusNode,
+      autofocus: autoFocus,
+      divisions: divisions,
+      onChangeStart: onChangeStart,
+      onChanged: disabled ? null : onChanged,
+      onChangeEnd: onChangeEnd,
+    );
     return Container(
       width: width,
       height: height,
@@ -325,76 +306,5 @@ class DHSlider extends StatelessWidget {
         child: slider,
       ),
     );
-  }
-}
-
-/// 修复Slider滑动问题
-class FixSlider extends StatefulWidget {
-  final double value;
-  final double min;
-  final double max;
-  final int? divisions;
-  final String? label;
-
-  /// 焦点节点
-  final FocusNode? focusNode;
-
-  /// 是否自动获取焦点
-  final bool autoFocus;
-  final ValueChanged<double>? onChangeStart;
-  final ValueChanged<double>? onChangeEnd;
-  final ValueChanged<double>? onChanged;
-
-  FixSlider({
-    required this.value,
-    this.min = .0,
-    this.max = 1.0,
-    this.onChangeStart,
-    this.onChanged,
-    this.onChangeEnd,
-    this.divisions,
-    this.label,
-    this.focusNode,
-    this.autoFocus = false,
-  });
-
-  @override
-  _FixSliderState createState() => _FixSliderState();
-}
-
-class _FixSliderState extends State<FixSlider> {
-  static const duration = Duration(milliseconds: 100);
-  DateTime? lastOnChangeEnd;
-  Timer? _timer;
-
-  @override
-  Widget build(BuildContext context) {
-    return Slider(
-      value: widget.value,
-      min: widget.min,
-      max: widget.max,
-      label: widget.label,
-      divisions: widget.divisions,
-      autofocus: widget.autoFocus,
-      focusNode: widget.focusNode,
-      onChangeStart: (double value) {
-        if (lastOnChangeEnd == null ||
-            DateTime.now().difference(lastOnChangeEnd!) > duration) {
-          widget.onChangeStart?.call(value);
-        } else {
-          _timer?.cancel();
-        }
-      },
-      onChanged: widget.onChanged,
-      onChangeEnd: (double value) {
-        lastOnChangeEnd = DateTime.now();
-        delayOnChangeEnd(() => widget.onChangeEnd?.call(value));
-      },
-    );
-  }
-
-  void delayOnChangeEnd(VoidCallback action) {
-    _timer?.cancel();
-    _timer = Timer(duration, action);
   }
 }

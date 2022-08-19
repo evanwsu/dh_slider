@@ -12,8 +12,9 @@ import 'indicator.dart';
 /// 自定义Track
 class DHSliderTrackShape extends SliderTrackShape {
   final ui.Image? image;
+  final bool padTrack;
 
-  const DHSliderTrackShape({this.image});
+  const DHSliderTrackShape({this.image, this.padTrack = true});
 
   @override
   Rect getPreferredRect({
@@ -46,6 +47,7 @@ class DHSliderTrackShape extends SliderTrackShape {
     bool isEnabled = false,
   }) {
     if (image == null) {
+      // 绘制背景不使用图片
       if (sliderTheme.trackHeight == null || sliderTheme.trackHeight! <= 0) {
         return;
       }
@@ -56,12 +58,14 @@ class DHSliderTrackShape extends SliderTrackShape {
       final ColorTween inactiveTrackColorTween = ColorTween(
           begin: sliderTheme.disabledInactiveTrackColor,
           end: sliderTheme.inactiveTrackColor);
+
       final Paint activePaint = Paint()
         ..color = activeTrackColorTween.evaluate(enableAnimation)!;
       final Paint inactivePaint = Paint()
         ..color = inactiveTrackColorTween.evaluate(enableAnimation)!;
-      Paint leftTrackPaint;
-      Paint rightTrackPaint;
+
+      final Paint leftTrackPaint;
+      final Paint rightTrackPaint;
       switch (textDirection) {
         case TextDirection.ltr:
           leftTrackPaint = activePaint;
@@ -81,15 +85,15 @@ class DHSliderTrackShape extends SliderTrackShape {
         isDiscrete: isDiscrete,
       );
 
-      final Rect leftTrackArcRect = Rect.fromLTWH(
-          trackRect.left, trackRect.top, trackRect.height, trackRect.height);
-
-      final Size thumbSize =
-          sliderTheme.thumbShape!.getPreferredSize(isEnabled, isDiscrete);
-      final Rect leftTrackSegment = Rect.fromLTRB(
-          trackRect.left + trackRect.height / 2,
+      final leftTrackArcRect = Rect.fromLTWH(
+          trackRect.left - (padTrack ? 0 : trackRect.height / 2),
           trackRect.top,
-          thumbCenter.dx - thumbSize.width / 2,
+          trackRect.height,
+          trackRect.height);
+      final leftTrackSegment = Rect.fromLTRB(
+          leftTrackArcRect.left + trackRect.height / 2,
+          trackRect.top,
+          thumbCenter.dx,
           trackRect.bottom);
 
       if (!leftTrackSegment.isEmpty)
@@ -100,15 +104,16 @@ class DHSliderTrackShape extends SliderTrackShape {
         context.canvas.drawRect(leftTrackSegment, leftTrackPaint);
 
       final Rect rightTrackArcRect = Rect.fromLTWH(
-          trackRect.right - trackRect.height,
+          trackRect.right -
+              (padTrack ? trackRect.height : trackRect.height / 2),
           trackRect.top,
           trackRect.height,
           trackRect.height);
 
       final Rect rightTrackSegment = Rect.fromLTRB(
-          thumbCenter.dx + thumbSize.width / 2,
+          thumbCenter.dx,
           trackRect.top,
-          trackRect.right - trackRect.height / 2,
+          rightTrackArcRect.left + trackRect.height / 2,
           trackRect.bottom);
 
       if (!rightTrackSegment.isEmpty)
@@ -118,15 +123,25 @@ class DHSliderTrackShape extends SliderTrackShape {
       if (!rightTrackSegment.isEmpty)
         context.canvas.drawRect(rightTrackSegment, rightTrackPaint);
     } else {
-      final Rect dst = getPreferredRect(
+      final Rect trackRect = getPreferredRect(
         parentBox: parentBox,
         offset: offset,
         sliderTheme: sliderTheme,
         isEnabled: isEnabled,
         isDiscrete: isDiscrete,
       );
-      Rect src = Rect.fromLTRB(
+
+      final Rect src = Rect.fromLTRB(
           0, 0, image!.width.toDouble(), image!.height.toDouble());
+      Rect dst = trackRect;
+      if (!padTrack) {
+        final double thumbSize = sliderTheme.thumbShape!
+            .getPreferredSize(isEnabled, isDiscrete)
+            .width;
+
+        dst = Rect.fromLTRB(trackRect.left - thumbSize / 2, trackRect.top,
+            trackRect.right + thumbSize / 2, trackRect.bottom);
+      }
       if (!src.isEmpty && !dst.isEmpty)
         context.canvas
             .drawImageRect(image!, src, dst, Paint()..isAntiAlias = true);
@@ -137,18 +152,16 @@ class DHSliderTrackShape extends SliderTrackShape {
 /// 自定义Thumb
 class DHThumbShape extends SliderComponentShape {
   final double enabledThumbRadius;
-  final double? disabledThumbRadius;
+  final double _disabledThumbRadius;
   final ui.Image? image;
   final BorderSide borderSide;
 
   const DHThumbShape({
     required this.borderSide,
     this.enabledThumbRadius = 10.0,
-    this.disabledThumbRadius,
+    double? disabledThumbRadius,
     this.image,
-  });
-
-  double get _disabledThumbRadius => disabledThumbRadius ?? enabledThumbRadius;
+  }) : _disabledThumbRadius = disabledThumbRadius ?? enabledThumbRadius;
 
   @override
   Size getPreferredSize(bool isEnabled, bool isDiscrete) {
@@ -286,7 +299,6 @@ class DHIndicatorPathPainter {
     const double edgePadding = 8.0;
     final double rectangleWidth =
         _upperRectangleWidth(labelPainter, scale, textScaleFactor);
-
     // 获取全局坐标
     final Offset globalCenter = parentBox.localToGlobal(center);
 

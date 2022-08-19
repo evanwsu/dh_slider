@@ -1,3 +1,8 @@
+## [1.0.0] - 2021.08.18
+
+- Added `padTrack` to adjust the position of thumb and track
+  Remove the `inScroll` property, the problem has been [fixed](https://github.com/flutter/flutter/commit/0902576aba4db62774d04cfb6ccfc719108caf31).
+
 ## [0.0.6] - 2021.04.14 
 
 - Null safe

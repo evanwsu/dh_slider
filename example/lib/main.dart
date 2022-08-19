@@ -47,10 +47,9 @@ class _SliderPageState extends State<SliderPage> {
   @override
   Widget build(BuildContext context) {
     var dhSlider = DHSlider(
-        inScroll: true,
         thumbBorderSide: BorderSide.none,
         thumbColor: Colors.redAccent,
-        trackHeight: 3,
+        trackHeight: 46,
         margin: EdgeInsets.only(left: 10, right: 10, top: 20),
         value: slider,
         label: "$slider",
@@ -86,13 +85,13 @@ class _SliderPageState extends State<SliderPage> {
       builder: (BuildContext context, AsyncSnapshot<ui.Image> snapshot) {
         return DHSlider(
           value: slider,
-          trackImage: snapshot.data,
-          trackHeight: 13,
+          trackHeight: 12,
+          trackShape: DHSliderTrackShape(image: snapshot.data, padTrack: false),
           activeTrackColor: Colors.transparent,
           inactiveTrackColor: Colors.transparent,
           disabledActiveTrackColor: Colors.transparent,
           disabledInactiveTrackColor: Colors.transparent,
-          thumbColor: Colors.white,
+          thumbColor: Colors.yellowAccent.withOpacity(0.2),
           disabledThumbColor: Colors.white,
           enabledThumbRadius: 12,
           margin: EdgeInsets.only(left: 10, right: 10, top: 30),
@@ -101,12 +100,15 @@ class _SliderPageState extends State<SliderPage> {
             color: Colors.red,
           ),
           onChanged: (value) {
+            print("onChange: $value");
             this.setState(() => slider = value);
           },
           onChangeStart: (value) {
+            print("onChangeStart: $value");
             this.setState(() => slider = value);
           },
           onChangeEnd: (value) {
+            print("onChangeEnd: $value");
             this.setState(() => slider = value);
           },
           min: 0,
@@ -115,12 +117,42 @@ class _SliderPageState extends State<SliderPage> {
       },
     );
 
+    Widget spaceSlider = DHSlider(
+      value: slider,
+      trackHeight: 46,
+      thumbBorderSide: BorderSide(width: 4, color: Color(0xFF31C2A6)),
+      activeTrackColor: Color(0x8031C2A6),
+      inactiveTrackColor: Color(0xFFF70000),
+      thumbColor: Colors.yellowAccent.withOpacity(0.2),
+      disabledThumbColor: Colors.transparent,
+      backgroundColor: Colors.transparent,
+      enabledThumbRadius: 21,
+      trackShape: DHSliderTrackShape(padTrack: false),
+      onChanged: (value) {
+        this.setState(() => slider = value);
+      },
+      onChangeStart: (value) {
+        this.setState(() => slider = value);
+      },
+      onChangeEnd: (value) {
+        this.setState(() => slider = value);
+      },
+      min: 0.0,
+      max: 1.0,
+    );
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
       ),
       body: ListView(
-        children: <Widget>[dhSlider, fbSlider],
+        padding: EdgeInsets.symmetric(horizontal: 30),
+        children: <Widget>[
+          dhSlider,
+          fbSlider,
+          SizedBox(height: 20),
+          spaceSlider,
+        ],
       ),
     );
   }
