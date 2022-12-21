@@ -1,3 +1,7 @@
+## [1.0.1] - 2022.12.21
+
+- Add marks for the slider, and the thumb shows the current value
+
 ## [1.0.0] - 2021.08.18
 
 - Added `padTrack` to adjust the position of thumb and track

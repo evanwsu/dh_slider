@@ -11,10 +11,37 @@ import 'indicator.dart';
 
 /// 自定义Track
 class DHSliderTrackShape extends SliderTrackShape {
+  /// track背景图片[image]
   final ui.Image? image;
-  final bool padTrack;
 
-  const DHSliderTrackShape({this.image, this.padTrack = true});
+  /// track是否左对齐thumb中心
+  /// true track左对齐thumb中心
+  /// false track左对齐thumb左
+  final bool alignThumbCenter;
+
+  final List<String>? marks;
+
+  /// 可用状态左侧mark样式
+  final TextStyle? activeMarkStyle;
+
+  /// 可用状态右侧mark样式
+  final TextStyle? inactiveMarkStyle;
+
+  /// 不可用状态左侧mark样式
+  final TextStyle? disabledActiveMarkStyle;
+
+  /// 不可用状态右侧mark样式
+  final TextStyle? disabledInactiveMarkStyle;
+
+  const DHSliderTrackShape({
+    this.image,
+    this.alignThumbCenter = true,
+    this.marks,
+    this.activeMarkStyle,
+    this.inactiveMarkStyle,
+    this.disabledActiveMarkStyle,
+    this.disabledInactiveMarkStyle,
+  }) : assert(marks == null || marks.length > 1);
 
   @override
   Rect getPreferredRect({
@@ -46,6 +73,14 @@ class DHSliderTrackShape extends SliderTrackShape {
     bool isDiscrete = false,
     bool isEnabled = false,
   }) {
+    final Rect trackRect = getPreferredRect(
+      parentBox: parentBox,
+      offset: offset,
+      sliderTheme: sliderTheme,
+      isEnabled: isEnabled,
+      isDiscrete: isDiscrete,
+    );
+
     if (image == null) {
       // 绘制背景不使用图片
       if (sliderTheme.trackHeight == null || sliderTheme.trackHeight! <= 0) {
@@ -77,16 +112,8 @@ class DHSliderTrackShape extends SliderTrackShape {
           break;
       }
 
-      final Rect trackRect = getPreferredRect(
-        parentBox: parentBox,
-        offset: offset,
-        sliderTheme: sliderTheme,
-        isEnabled: isEnabled,
-        isDiscrete: isDiscrete,
-      );
-
       final leftTrackArcRect = Rect.fromLTWH(
-          trackRect.left - (padTrack ? 0 : trackRect.height / 2),
+          trackRect.left - (alignThumbCenter ? 0 : trackRect.height / 2),
           trackRect.top,
           trackRect.height,
           trackRect.height);
@@ -105,7 +132,7 @@ class DHSliderTrackShape extends SliderTrackShape {
 
       final Rect rightTrackArcRect = Rect.fromLTWH(
           trackRect.right -
-              (padTrack ? trackRect.height : trackRect.height / 2),
+              (alignThumbCenter ? trackRect.height : trackRect.height / 2),
           trackRect.top,
           trackRect.height,
           trackRect.height);
@@ -123,18 +150,10 @@ class DHSliderTrackShape extends SliderTrackShape {
       if (!rightTrackSegment.isEmpty)
         context.canvas.drawRect(rightTrackSegment, rightTrackPaint);
     } else {
-      final Rect trackRect = getPreferredRect(
-        parentBox: parentBox,
-        offset: offset,
-        sliderTheme: sliderTheme,
-        isEnabled: isEnabled,
-        isDiscrete: isDiscrete,
-      );
-
       final Rect src = Rect.fromLTRB(
           0, 0, image!.width.toDouble(), image!.height.toDouble());
       Rect dst = trackRect;
-      if (!padTrack) {
+      if (!alignThumbCenter) {
         final double thumbSize = sliderTheme.thumbShape!
             .getPreferredSize(isEnabled, isDiscrete)
             .width;
@@ -146,6 +165,29 @@ class DHSliderTrackShape extends SliderTrackShape {
         context.canvas
             .drawImageRect(image!, src, dst, Paint()..isAntiAlias = true);
     }
+
+    if (marks != null && marks!.isNotEmpty) {
+      final markPainter = TextPainter(textDirection: textDirection);
+      final length = marks!.length;
+      double width = trackRect.width / (length - 1);
+      for (int i = 0; i < length; i++) {
+        // 偏差4ui效果更好些
+        var x = width * i + trackRect.height / 2 - 4;
+        var markStyle;
+        if (x <= thumbCenter.dx) {
+          markStyle = isEnabled ? activeMarkStyle : disabledActiveMarkStyle;
+        } else {
+          markStyle = isEnabled ? inactiveMarkStyle : disabledInactiveMarkStyle;
+        }
+        markPainter
+          ..text = TextSpan(text: marks?[i], style: markStyle)
+          ..layout();
+        markPainter.paint(
+            context.canvas,
+            Offset(x - markPainter.width / 2,
+                thumbCenter.dy - markPainter.height / 2));
+      }
+    }
   }
 }
 
@@ -155,12 +197,16 @@ class DHThumbShape extends SliderComponentShape {
   final double _disabledThumbRadius;
   final ui.Image? image;
   final BorderSide borderSide;
+  final String? label;
+  final TextStyle? labelStyle;
 
   const DHThumbShape({
     required this.borderSide,
+    this.image,
+    this.label,
+    this.labelStyle,
     this.enabledThumbRadius = 10.0,
     double? disabledThumbRadius,
-    this.image,
   }) : _disabledThumbRadius = disabledThumbRadius ?? enabledThumbRadius;
 
   @override
@@ -184,10 +230,6 @@ class DHThumbShape extends SliderComponentShape {
     required double textScaleFactor,
     required Size sizeWithOverflow,
   }) {
-    assert(context != null);
-    assert(center != null);
-    assert(enableAnimation != null);
-    assert(sliderTheme != null);
     final Tween<double> radiusTween = Tween<double>(
       begin: _disabledThumbRadius,
       end: enabledThumbRadius,
@@ -219,11 +261,23 @@ class DHThumbShape extends SliderComponentShape {
               ..strokeWidth = borderSide.width);
       }
     } else {
+      // thumb use image
       Rect dst = Rect.fromCircle(center: center, radius: radius);
       Rect src = Rect.fromLTRB(
           0, 0, image!.width.toDouble(), image!.height.toDouble());
       context.canvas
           .drawImageRect(image!, src, dst, Paint()..isAntiAlias = true);
+    }
+    // draw a label in the center of the thumb
+    if (label != null) {
+      final painter = TextPainter(
+          textDirection: textDirection,
+          text: TextSpan(text: label, style: labelStyle))
+        ..layout();
+      painter.paint(
+          context.canvas,
+          Offset(
+              center.dx - painter.width / 2, center.dy - painter.height / 2));
     }
   }
 }
