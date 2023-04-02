@@ -36,15 +36,17 @@ class SliderPage extends StatefulWidget {
 class _SliderPageState extends State<SliderPage> {
   double slider = 0.0;
 
-  Future<ui.Image>? sliderFuture;
+  Future<List<ui.Image>>? sliderFuture;
 
   @override
   void initState() {
     super.initState();
-    sliderFuture = getImageFuture(
-        AssetImage("images/slider_bck.png"),
-       AssetImage("images/.png"),
-    );
+
+    sliderFuture = Future.wait([
+      getImageFuture(AssetImage("images/slider_bck.png")),
+      getImageFuture(
+          ResizeImage(AssetImage("images/thumb.png"), width: 24, height: 24))
+    ]);
   }
 
   @override
@@ -99,18 +101,19 @@ class _SliderPageState extends State<SliderPage> {
   Widget _getTrackImageSlider() {
     return FutureBuilder(
       future: sliderFuture,
-      builder: (BuildContext context, AsyncSnapshot<ui.Image> snapshot) {
+      builder: (BuildContext context, AsyncSnapshot<List<ui.Image>> snapshot) {
         return DHSlider(
           value: slider,
           trackHeight: 12,
-          trackShape: DHSliderTrackShape(image: snapshot.data),
+          trackImage: snapshot.data?[0],
           activeTrackColor: Colors.transparent,
           inactiveTrackColor: Colors.transparent,
           disabledActiveTrackColor: Colors.transparent,
           disabledInactiveTrackColor: Colors.transparent,
-          thumbColor: Colors.yellowAccent.withOpacity(0.2),
-          disabledThumbColor: Colors.white,
-          enabledThumbRadius: 12,
+          thumbImage: snapshot.data?[1],
+          // thumbColor: Colors.yellowAccent.withOpacity(0.2),
+          // disabledThumbColor: Colors.white,
+          enabledThumbRadius: 10,
           margin: EdgeInsets.only(left: 10, right: 10, top: 80),
           thumbBorderSide: BorderSide(
             width: 0.6,

@@ -193,7 +193,9 @@ class DHSliderTrackShape extends SliderTrackShape {
 
 /// 自定义Thumb
 class DHThumbShape extends SliderComponentShape {
+  /// 设置enabled状态thumb半径
   final double enabledThumbRadius;
+  /// 设置disabled状态thumb半径
   final double _disabledThumbRadius;
   final ui.Image? image;
   final BorderSide borderSide;

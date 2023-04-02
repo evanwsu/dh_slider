@@ -20,7 +20,7 @@ import 'shapes.dart';
 ///  Future<List<ui.Image>> getImageFuture(){
 ///    return Future.wait([
 ///      ImageLoader.loadImageByProvider(AssetImage("images/slider_bck.png")),
-///      ImageLoader.loadImageByProvider(AssetImage(FanResourceUtil.getImagePath("thumb")))
+///      ImageLoader.loadImageByProvider(AssetImage("images/thumb.png")))
 ///    ]);
 ///  }
 ///  2.使用FutureBuilder创建DHSlider。
