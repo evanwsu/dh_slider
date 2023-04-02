@@ -41,7 +41,10 @@ class _SliderPageState extends State<SliderPage> {
   @override
   void initState() {
     super.initState();
-    sliderFuture = getImageFuture(AssetImage("images/slider_bck.png"));
+    sliderFuture = getImageFuture(
+        AssetImage("images/slider_bck.png"),
+       AssetImage("images/.png"),
+    );
   }
 
   @override

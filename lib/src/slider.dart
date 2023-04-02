@@ -19,7 +19,7 @@ import 'shapes.dart';
 /// 1.获取ui.Image
 ///  Future<List<ui.Image>> getImageFuture(){
 ///    return Future.wait([
-///      ImageLoader.loadImageByProvider(AssetImage(FanResourceUtil.getImagePath("slider_bck"))),
+///      ImageLoader.loadImageByProvider(AssetImage("images/slider_bck.png")),
 ///      ImageLoader.loadImageByProvider(AssetImage(FanResourceUtil.getImagePath("thumb")))
 ///    ]);
 ///  }
