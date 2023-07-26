@@ -1,3 +1,7 @@
+## [1.0.2] - 2023.7.26
+
+- Modify the environment
+
 ## [1.0.1] - 2022.12.21
 
 - Add marks for the slider, and the thumb shows the current value

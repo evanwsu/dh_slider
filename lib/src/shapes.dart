@@ -68,11 +68,13 @@ class DHSliderTrackShape extends SliderTrackShape {
     required RenderBox parentBox,
     required SliderThemeData sliderTheme,
     required Animation<double> enableAnimation,
-    required TextDirection textDirection,
     required Offset thumbCenter,
-    bool isDiscrete = false,
+    Offset? secondaryOffset,
     bool isEnabled = false,
+    bool isDiscrete = false,
+    required TextDirection textDirection,
   }) {
+
     final Rect trackRect = getPreferredRect(
       parentBox: parentBox,
       offset: offset,
@@ -195,6 +197,7 @@ class DHSliderTrackShape extends SliderTrackShape {
 class DHThumbShape extends SliderComponentShape {
   /// 设置enabled状态thumb半径
   final double enabledThumbRadius;
+
   /// 设置disabled状态thumb半径
   final double _disabledThumbRadius;
   final ui.Image? image;
