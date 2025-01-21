@@ -74,7 +74,6 @@ class DHSliderTrackShape extends SliderTrackShape {
     bool isDiscrete = false,
     required TextDirection textDirection,
   }) {
-
     final Rect trackRect = getPreferredRect(
       parentBox: parentBox,
       offset: offset,
@@ -114,16 +113,22 @@ class DHSliderTrackShape extends SliderTrackShape {
           break;
       }
 
-      final leftTrackArcRect = Rect.fromLTWH(
-          trackRect.left - (alignThumbCenter ? 0 : trackRect.height / 2),
-          trackRect.top,
-          trackRect.height,
-          trackRect.height);
+      // thumbSize
+      final thumbSize =
+          sliderTheme.thumbShape!.getPreferredSize(isEnabled, isDiscrete).width;
+
       final leftTrackSegment = Rect.fromLTRB(
-          leftTrackArcRect.left + trackRect.height / 2,
+          trackRect.left -
+              (alignThumbCenter ? 0 : thumbSize / 2 - trackRect.height / 2),
           trackRect.top,
           thumbCenter.dx,
           trackRect.bottom);
+
+      final leftTrackArcRect = Rect.fromLTWH(
+          leftTrackSegment.left - trackRect.height / 2,
+          trackRect.top,
+          trackRect.height,
+          trackRect.height);
 
       if (!leftTrackSegment.isEmpty)
         context.canvas.drawArc(
@@ -132,25 +137,28 @@ class DHSliderTrackShape extends SliderTrackShape {
       if (!leftTrackSegment.isEmpty)
         context.canvas.drawRect(leftTrackSegment, leftTrackPaint);
 
-      final Rect rightTrackArcRect = Rect.fromLTWH(
-          trackRect.right -
-              (alignThumbCenter ? trackRect.height : trackRect.height / 2),
-          trackRect.top,
-          trackRect.height,
-          trackRect.height);
-
+      // 绘制右侧track
+      //如果thumb中心对齐，则track不用偏移，否则偏移thumbSize/2 - trackRect.height/2
       final Rect rightTrackSegment = Rect.fromLTRB(
           thumbCenter.dx,
           trackRect.top,
-          rightTrackArcRect.left + trackRect.height / 2,
+          trackRect.right +
+              (alignThumbCenter ? 0 : thumbSize / 2 - trackRect.height / 2),
           trackRect.bottom);
+
+      // 绘制右侧track弧线
+      final Rect rightTrackArcRect = Rect.fromLTRB(
+          rightTrackSegment.right - trackRect.height / 2,
+          trackRect.top,
+          rightTrackSegment.right + trackRect.height / 2,
+          trackRect.bottom);
+
+      if (!rightTrackSegment.isEmpty)
+        context.canvas.drawRect(rightTrackSegment, rightTrackPaint);
 
       if (!rightTrackSegment.isEmpty)
         context.canvas.drawArc(
             rightTrackArcRect, -math.pi / 2, math.pi, false, rightTrackPaint);
-
-      if (!rightTrackSegment.isEmpty)
-        context.canvas.drawRect(rightTrackSegment, rightTrackPaint);
     } else {
       final Rect src = Rect.fromLTRB(
           0, 0, image!.width.toDouble(), image!.height.toDouble());
@@ -216,8 +224,10 @@ class DHThumbShape extends SliderComponentShape {
 
   @override
   Size getPreferredSize(bool isEnabled, bool isDiscrete) {
-    return Size.fromRadius(
-        isEnabled == true ? enabledThumbRadius : _disabledThumbRadius);
+    final borderRadius = borderSide.width / 2;
+    return Size.fromRadius(isEnabled == true
+        ? enabledThumbRadius + borderRadius
+        : _disabledThumbRadius + borderRadius);
   }
 
   @override
