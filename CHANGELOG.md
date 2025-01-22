@@ -1,3 +1,7 @@
+## [1.0.3] - 2025.1.21
+
+- Fix the problem of the thumb not being displayed when the slider is at the end
+
 ## [1.0.2] - 2023.7.26
 
 - Modify the environment
